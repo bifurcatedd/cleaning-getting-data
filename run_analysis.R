@@ -2,30 +2,42 @@ library(reshape2)
 
 filename <- "getdata_dataset.zip"
 
-## Download and unzip the dataset:
+## Dwload and unzipping the file 
 if (!file.exists(filename)){
   fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "
   download.file(fileURL, filename, method="curl")
-}  
+  
+} 
+
 if (!file.exists("UCI HAR Dataset")) { 
-  unzip(filename) 
+  unzip(filename)
+  
+  
 }
 
-# Load activity labels + features
+# Activity lables and feature labels
 activityLabels <- read.table("UCI HAR Dataset/activity_labels.txt")
+
 activityLabels[,2] <- as.character(activityLabels[,2])
+
 features <- read.table("UCI HAR Dataset/features.txt")
+
 features[,2] <- as.character(features[,2])
 
-# Extract only the data on mean and standard deviation
+# Mean and Standard Deviation
 featuresWanted <- grep(".*mean.*|.*std.*", features[,2])
+
 featuresWanted.names <- features[featuresWanted,2]
+
 featuresWanted.names = gsub('-mean', 'Mean', featuresWanted.names)
+
 featuresWanted.names = gsub('-std', 'Std', featuresWanted.names)
+
 featuresWanted.names <- gsub('[-()]', '', featuresWanted.names)
 
 
-# Load the datasets
+
+# Data sets
 train <- read.table("UCI HAR Dataset/train/X_train.txt")[featuresWanted]
 trainActivities <- read.table("UCI HAR Dataset/train/Y_train.txt")
 trainSubjects <- read.table("UCI HAR Dataset/train/subject_train.txt")
@@ -40,7 +52,7 @@ test <- cbind(testSubjects, testActivities, test)
 allData <- rbind(train, test)
 colnames(allData) <- c("subject", "activity", featuresWanted.names)
 
-# turn activities & subjects into factors
+# factoring
 allData$activity <- factor(allData$activity, levels = activityLabels[,1], labels = activityLabels[,2])
 allData$subject <- as.factor(allData$subject)
 
